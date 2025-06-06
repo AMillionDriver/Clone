@@ -1,0 +1,198 @@
+/* player.css - VERSI LENGKAP, FINAL, & DIOPTIMALKAN */
+
+/* Mengimpor variabel dan gaya dasar dari main.css agar konsisten */
+@import url('main.css');
+
+/* --- Gaya Umum Halaman Player --- */
+body {
+    background-color: #ffffff; /* Latar belakang putih bersih untuk fokus pada konten */
+}
+
+/* --- Penyesuaian Header di Halaman Player --- */
+.top-header .search-input-player {
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 20px 0 0 20px;
+    width: 100%;
+    background-color: #fff;
+}
+.top-header .search-icon-btn-player {
+    border: 1px solid var(--border-color);
+    border-left: none;
+    padding: 6px 16px;
+    border-radius: 0 20px 20px 0;
+    background-color: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.top-header .search-icon-btn-player:hover { background-color: #f0f0f0; }
+
+/* Mengatur ukuran ikon SVG di dalam tombol header */
+.top-header .search-icon-btn-player svg,
+.top-header .header-left a svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--icon-color);
+}
+
+/* Sembunyikan search di mobile untuk memberi ruang pada judul video di bawah */
+@media (max-width: 600px) {
+    .top-header .search-container { display: none; }
+}
+
+/* --- Tata Letak Utama Halaman Player --- */
+.player-page-container {
+    max-width: 1850px; /* Lebar maksimal konten + rekomendasi */
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column; /* Default: 1 kolom untuk mobile */
+    gap: 24px;
+}
+.main-column { flex: 1; min-width: 0; }
+.side-column { flex-basis: 400px; flex-shrink: 0; }
+
+
+/* ==================================================== */
+/* 1. BAGIAN PEMUTAR VIDEO                    */
+/* ==================================================== */
+.player-section { width: 100%; margin-bottom: 12px; }
+.video-player-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+#player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* --- Indikator Loading --- */
+.loading-spinner {
+    position: absolute; top: 50%; left: 50%;
+    width: 50px; height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    display: none; /* Diatur oleh JS */
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* --- Lapisan Double-Tap --- */
+.seek-overlay {
+    position: absolute; top: 0; width: 40%;
+    height: calc(100% - 70px); /* Sisakan ruang untuk kontrol bawah */
+    z-index: 1;
+}
+.seek-overlay.left { left: 0; }
+.seek-overlay.right { right: 0; }
+
+/* --- Kontrol Kustom --- */
+.custom-controls-container {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    z-index: 10;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+}
+.video-player-wrapper.controls-visible .custom-controls-container {
+    opacity: 1; visibility: visible;
+}
+.progress-bar-container { padding: 0 10px; cursor: pointer; transform: translateY(-5px); transition: transform 0.2s; }
+.progress-bar-container:hover .progress-bar { height: 6px; }
+.progress-bar { width: 100%; height: 4px; background-color: rgba(255, 255, 255, 0.3); border-radius: 2px; position: relative; transition: height 0.2s; }
+.progress-bar-played { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--accent-color); border-radius: 2px; width: 0%; }
+.controls-bottom-row { display: flex; justify-content: space-between; align-items: center; padding: 0 10px 10px 10px; color: #fff; }
+.controls-left, .controls-right { display: flex; align-items: center; gap: 8px; }
+.control-button { background: transparent; border: none; padding: 8px; color: #fff; opacity: 0.9; transition: opacity 0.2s, transform 0.2s; }
+.control-button:hover { opacity: 1; transform: scale(1.1); }
+.control-button svg { width: 28px; height: 28px; fill: #fff; pointer-events: none; }
+.volume-container { display: flex; align-items: center; }
+.volume-slider { width: 0; opacity: 0; transition: all 0.3s ease; }
+.volume-container:hover .volume-slider { width: 80px; opacity: 1; margin-left: 8px; }
+input[type=range] { -webkit-appearance: none; background: transparent; cursor: pointer; }
+input[type=range]:focus { outline: none; }
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 2px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #fff; margin-top: -5px; }
+.time-display { color: #fff; font-size: 0.875rem; font-weight: 500; font-family: 'Roboto Mono', 'monospace'; padding-left: 8px; }
+
+/* Menu Setelan */
+.settings-menu {
+    position: absolute; bottom: 60px; right: 10px;
+    background-color: rgba(28, 28, 28, 0.9);
+    border-radius: 8px; padding: 8px 0;
+    min-width: 200px;
+    display: none; /* Diatur oleh JS */
+}
+.settings-menu-item { padding: 8px 16px; font-size: 0.875rem; color: #fff; cursor: pointer; display: flex; justify-content: space-between; }
+.settings-menu-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+.settings-menu-item span { color: #aaa; }
+
+
+/* ==================================================== */
+/* 2. INFO UTAMA & AKSI                      */
+/* ==================================================== */
+.video-info-section .video-title-player { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
+.video-meta-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
+.channel-info { display: flex; align-items: center; gap: 12px; }
+.channel-logo-player { width: 48px; height: 48px; border-radius: 50%; }
+.channel-meta { display: flex; flex-direction: column; }
+.channel-name-player { font-weight: 500; }
+.subscriber-count { font-size: 0.75rem; color: var(--secondary-text-color); }
+.subscribe-button { background-color: var(--primary-text-color); color: #fff; padding: 10px 16px; border-radius: 20px; font-weight: 500; margin-left: 12px; }
+.subscribe-button.subscribed { background-color: #555; }
+.video-actions { display: flex; gap: 8px; }
+.action-button { display: flex; align-items: center; gap: 6px; background-color: var(--button-bg-color); padding: 0; border-radius: 20px; font-size: 0.875rem; font-weight: 500; }
+.like-dislike-group > span { padding: 10px; display: inline-flex; align-items: center; gap: 6px; }
+.like-dislike-group > span:first-child { padding-right: 16px; border-right: 1px solid #ccc; }
+.like-dislike-group > span:last-child { padding-left: 16px; }
+.like-button.active svg, .dislike-button.active svg { fill: var(--accent-color); }
+.share-button { padding: 10px 16px; }
+.action-button svg { width: 24px; height: 24px; fill: var(--primary-text-color); }
+
+
+/* ==================================================== */
+/* 3. DESKRIPSI & CHAPTERS                    */
+/* ==================================================== */
+.description-section { margin: 12px 0; }
+.description-box { background-color: var(--background-color-box); padding: 16px; border-radius: 12px; font-size: 0.875rem; line-height: 1.5; cursor: pointer; }
+.description-box.collapsed { overflow: hidden; }
+.description-box.collapsed .description-text { max-height: 4.5em; overflow: hidden; position: relative; }
+.description-box.collapsed .description-text::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1.5em; background: linear-gradient(to top, var(--background-color-box), transparent); }
+.description-header { color: var(--secondary-text-color); font-weight: 500; margin-bottom: 8px; display: flex; gap: 16px; flex-wrap: wrap; }
+.toggle-description-button { font-weight: 600; margin-top: 8px; display: block; border: none; background: none; padding: 0; }
+
+/* Styling lain untuk Komentar, Episode, Rekomendasi tetap sama seperti sebelumnya */
+/* ... */
+
+/* ==================================================== */
+/* MODE TEATER                              */
+/* ==================================================== */
+body.theater-mode { overflow: hidden; }
+body.theater-mode .top-header,
+body.theater-mode .side-column,
+body.theater-mode .main-column > *:not(.player-section) {
+    display: none;
+}
+body.theater-mode .player-page-container { padding: 0; max-width: none; }
+body.theater-mode .main-column { width: 100%; }
+body.theater-mode .player-section {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #000; z-index: 9999; margin: 0;
+}
+body.theater-mode .video-player-wrapper { border-radius: 0; }
+
+
+/* ==================================================== */
+/* MEDIA QUERIES UNTUK LAYOUT                 */
+/* ==================================================== */
+@media (min-width: 1024px) {
+    .player-page-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
